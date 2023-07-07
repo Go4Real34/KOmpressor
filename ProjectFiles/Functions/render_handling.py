@@ -58,7 +58,8 @@ def create_commands(settings, temp_location):
     return c1, c2
 
 
-def run_renders(command1, command2, current_settings, raw_command, splitted_command, temp_location, index, total):
+def run_renders(command1, command2, current_settings, raw_command, splitted_command, temp_location, index, total,
+                running_on_flask, socketio_reference):
     print(f"\n\nExecuting command: {index + 1}/{total} -> '{raw_command}'")
 
     print(f"\tStep: 1/{'2' if current_settings['speed_enabled'] > 0 else '1'} "
@@ -70,10 +71,16 @@ def run_renders(command1, command2, current_settings, raw_command, splitted_comm
         else:
             full_duration = full_duration - current_settings['cut_start']
 
+    if command2 is None:
+        stages = 1
+    else:
+        stages = 2
+
     process1 = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
     start_time1 = time.perf_counter()
-    process1_timestamp = update_progress(process1, 1, full_duration, start_time1)
+    process1_timestamp = update_progress(process1, 1, full_duration, start_time1,
+                                         running_on_flask, socketio_reference, 1, stages)
     end_time1 = time.perf_counter()
     print(f"\n\tStep: 1/{'2' if current_settings['speed_enabled'] > 0 else '1'} is completed. " +
           f"Processed {process1_timestamp}/{process1_timestamp} (100.00%), " +
@@ -86,7 +93,8 @@ def run_renders(command1, command2, current_settings, raw_command, splitted_comm
         process2 = subprocess.Popen(command2, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
         start_time2 = time.perf_counter()
-        process2_timestamp = update_progress(process2, splitted_command[15], full_duration, start_time2)
+        process2_timestamp = update_progress(process2, splitted_command[15], full_duration, start_time2,
+                                             running_on_flask, socketio_reference, 2, stages)
         end_time2 = time.perf_counter()
         print(f"\n\tStep: 2/2 is completed. " +
               f"Processed: {process2_timestamp}/{process2_timestamp} (100.00%), " +
@@ -124,7 +132,8 @@ def handle_render():
         temporary_first_location = f"temp{current_settings['output_format']}"
         command1, command2 = create_commands(current_settings, temporary_first_location)
         run_renders(command1, command2, current_settings, raw_commands[index], splitted_commands[index],
-                    temporary_first_location, index, len(handled_commands) - 1)
+                    temporary_first_location, index, len(handled_commands) - 1,
+                    False, None)
 
 
 def main():

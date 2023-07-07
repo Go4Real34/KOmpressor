@@ -4,17 +4,39 @@ import time
 import os
 
 
-def handle_first_run():
-    if not os.path.exists("ProjectFiles/TestIO/"):
-        os.mkdir("ProjectFiles/TestIO/")
-        os.mkdir("ProjectFiles/TestIO/Inputs")
-        os.mkdir("ProjectFiles/TestIO/Outputs")
+def handle_first_run(which_handling):
+    if which_handling == 'console':
+        if not os.path.exists("ProjectFiles/TestIO/"):
+            os.mkdir("ProjectFiles/TestIO/")
+            os.mkdir("ProjectFiles/TestIO/Inputs")
+            os.mkdir("ProjectFiles/TestIO/Outputs")
+        else:
+            if not os.path.exists("ProjectFiles/TestIO/Inputs/"):
+                os.mkdir("ProjectFiles/TestIO/Inputs")
 
-    if not os.path.exists("ProjectFiles/TestIO/Inputs/"):
-        os.mkdir("ProjectFiles/TestIO/Inputs")
+            if not os.path.exists("ProjectFiles/TestIO/Outputs/"):
+                os.mkdir("ProjectFiles/TestIO/Outputs")
 
-    if not os.path.exists("ProjectFiles/TestIO/Outputs/"):
-        os.mkdir("ProjectFiles/TestIO/Outputs")
+    elif which_handling == 'web':
+        if not os.path.exists("ProjectFiles/static/"):
+            os.mkdir("ProjectFiles/static/")
+            os.mkdir("ProjectFiles/static/inputs")
+            os.mkdir("ProjectFiles/static/outputs")
+        else:
+            if not os.path.exists("ProjectFiles/static/inputs/"):
+                os.mkdir("ProjectFiles/static/inputs")
+            else:
+                for file in os.listdir('ProjectFiles/static/inputs'):
+                    os.remove(os.path.join('ProjectFiles/static/inputs', file))
+
+            if not os.path.exists("ProjectFiles/static/outputs/"):
+                os.mkdir("ProjectFiles/static/outputs")
+            else:
+                for file in os.listdir('ProjectFiles/static/outputs'):
+                    os.remove(os.path.join('ProjectFiles/static/outputs', file))
+
+    if os.path.exists('ProjectFiles/current_video.txt'):
+        os.remove('ProjectFiles/current_video.txt')
 
 
 def get_video_length_in_seconds(video_path):
@@ -28,7 +50,7 @@ def get_video_length_in_seconds(video_path):
     )
 
 
-def update_progress(process, speed, duration, process_start_time):
+def update_progress(process, speed, duration, process_start_time, running_on_flask, socketio_reference, stage, stages):
     is_it_updated = False
 
     progress_duration = (duration * 100) / float(speed)
@@ -60,9 +82,29 @@ def update_progress(process, speed, duration, process_start_time):
                           "({:.2f}%), ".format(progress) +
                           "Time Elapsed: " + "{:.2f}s".format(round(time.perf_counter() - process_start_time, 2)) + ".",
                           end="", flush=True)
+                    if running_on_flask:
+                        dict_to_emit = {
+                            'current': current_time,
+                            'end': duration_text,
+                            'progress': progress,
+                            'stage': stage,
+                            'total': stages,
+                            'complete': False
+                        }
+                        socketio_reference.emit('update progress', dict_to_emit)
 
                 is_it_updated = not is_it_updated
 
+        if running_on_flask:
+            dict_to_emit = {
+                'current': duration_text,
+                'end': duration_text,
+                'progress': 100.00,
+                'stage': stage,
+                'total': stages,
+                'complete': True
+            }
+            socketio_reference.emit('update progress', dict_to_emit)
         return duration_text
 
     except KeyboardInterrupt:

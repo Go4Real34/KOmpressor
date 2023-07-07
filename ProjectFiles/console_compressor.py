@@ -12,7 +12,7 @@ def main():
     kompressor_folder_path = project_files_folder.rstrip("ProjectFiles").rstrip("\\")
     os.chdir(kompressor_folder_path)
 
-    handle_first_run()
+    handle_first_run('console')
 
     handle_render()
 

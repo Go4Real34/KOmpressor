@@ -6,5 +6,7 @@ ProjectFiles/__pycache__/
 ProjectFiles/Functions/__pycache__/
 
 temp.mp4
+ProjectFiles/current_video.txt
 
 ProjectFiles/TestIO/
+ProjectFiles/static/

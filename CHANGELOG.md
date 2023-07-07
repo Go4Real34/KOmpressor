@@ -25,11 +25,83 @@ The version format given as following.
 > #### - W: No Change in the Project
 > #### - YYYY-MM-DD: Date of release (Year - Month - Day)
 
-# **_Latest Version: [v1.0.0.0] - 2023-07-07_**
+# **_Latest Version: [v1.1.0.0] - 2023-07-07_**
 
 <br>
 
 # **_Change Log History_**
+
+# [v1.1.0.0] - 2023-07-07
+- Created web version of the FFMPEG based compressor.
+
+### **_Additions_**
+- **_Project Files_**
+  - **_web_compressor.py_**
+    - The main start point of the web version of the project. Functions handle folder creation, start 
+      the web server and include all redirection function for the web page.
+  
+  - **_web_handling.py_**
+    - Includes the functions to handle web form. Functions fills missing keys and create a dictionary 
+      before passing this dictionary to the console functions. 
+      commands.
+  
+  - **_upload_page.html_**
+    - Includes all HTML, CSS and JS code for the upload page. This page is the main entry page of the 
+      web version. Make available to save uploaded videos and redirect to the video settings page.
+  
+  - **_video_settings.html_**
+    - Includes all HTML, CSS and JS code for the video settings page. This page is reached after 
+      uploading and selecting a video to proceed and contains all video render, save and reset operations.
+  
+  - **_upload.php_**
+    - Includes PHP code to handle the upload process. This file is used to hold data of the video on upload 
+      process to the server.
+  
+  - **_requirements.txt_**
+    - Includes needed packages to run the project. This file is used by `pip` to install the packages 
+      automatically.
+
+
+- **_Resources_**
+  - **_'images(.png)' Folder_**
+    - Added images (8) that are used in the [README.md](README.md) file in `Project Media` section.
+
+### **_Changes_**
+- **_Project Files_**
+  - **_console_compressor.py_**
+    - Passed argument to the `handle_first_run` function.
+  
+  - **_render_handling.py_**
+    - Added arguments to `run_renders` function for web version references and used them to pass 
+      into the `update_progress` function.
+    - Added a code block that determines the current stage number depending on `command2` to pass into 
+      `update_progress` function.
+
+  -  **_extra_functions.py_**
+    - Added argument to the `handle_first_run` function and changed its code content to handle both 
+       versions depending on the given argument.
+    - Added arguments to the `update_progress` function and added a code block that connects to a SocketIO 
+      connection and send a data about the progress using these and extra arguments.
+
+
+- **_Documentation_**
+  - **_README.md_**
+    - Added extra explanations about web version in `Preparation, Usage & Deletion`, `Quick Explanation About How The Tools Work`,
+      `Project Media` and `Known Issues` sections.
+  
+  - **_CHANGELOG.md_**
+    - Added new changes about **_[v1.1.0.0]_**.
+
+  - **_.gitignore_**
+    - Added a new file (1) and a folder (1) to ignore.
+
+### **_Fixes_**
+ - No fixes were made.
+
+### **_Deletions_**
+- No deletions were made.
+
+<br>
 
 # [v1.0.0.0] - 2023-07-07
 - First release of the project.

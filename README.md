@@ -79,17 +79,39 @@ by Görkem Sarıkaya & Taha Berk Kuyruk for Computer Engineering III, Engineerin
 
 
 - If you are using an IDE;
-  - Run the file named `console_compressor.py` Python file that is under `ProjectFiles` folder (create a configuration 
-    with Python Interpreter if needed. I used PyCharm to do this project it both works with a configuration or selecting `Current File` as the run option.).
+  - Create a virtual environment using your IDE.
+
+  - Then, activate it and install the required packages with the following command via console or go and find them in your 
+    IDE tabs if any exists.\
+    ```.\venv\Scripts\activate```\
+    ```pip install -r requirements.txt```
+  
+  - Finally, run the files named `console_compressor.py` or `web_compressor.py` Python files that is under `ProjectFiles` folder,
+    depending on your choice (Create a configuration with Python Interpreter if needed. I used PyCharm to do this project, 
+    they both work with a configuration or selecting `Current File` as the run option.).
 
 
 - If you are using the command prompt;
   - Go to the location of the project.\
     ```cd KOmpressor```
   
-  - Then, run the `console_compressor.py` Python file inside ProjectFiles folder with `python` command.\
-    ```python ProjectFiles\console_compressor.py```
+  - Run the following commands to create a virtual environment and activate it;
+    - Create the virtual environment.\
+      ```python -m venv venv```,
+    
+    - Activate the virtual environment.\
+      ```.\venv\Scripts\activate```
 
+  - After activating it, you should see a `(venv)` text at the start of the command line or if you changed its name 
+    (2nd 'venv' in command above), you should see that name.
+  
+  - Then, install the required packages with the command via console:\
+    ```pip install -r requirements.txt```
+  
+  - Finally, run the `console_compressor.py` or `web_compressor.py` Python file with the command via console:\
+    ```python ProjectFiles/console_compressor.py```\
+    ```python ProjectFiles/web_compressor.py```
+  
 And you should be good to go.
 
 - After your work is done with the project you can directly close the command prompt or; if you want to delete something, right-clicking 
@@ -112,20 +134,42 @@ And you should be good to go.
         - Then remove the project folder completely.\
           ```rmdir /s /q KOmpressor```
 
-> **_Note:_** There is no need to create a virtual environment for now so, I did not include a virtual environment installation in this version.
 
+# Quick Explanation About How The Tools Work
+## **_Console Tool_**
+  - If you use console command, it will continue with the same command prompt.
+  - After you enter a command (or multiple commands if you entered '1' instead of '0' on the menu), it is split into keywords 
+    in a function and passes it to another function as a list. In that function, a setting dictionary that holds all the setting data
+    is created with these keywords. That settings dictionary is passed to command creator function. In this function each settings' FFMPEG 
+    command is created with the corresponding FFMPEG flags. After all commands are created, all these commands returned as a list and passed 
+    to the executor function. In this function, in a for loop, all commands taken by this function and this function executes them 
+    one by one and while executing, it returns progress continuously and that is printed to the console. After all render(s) 
+    are finished, output folder is opened with your operating system's file handler and operation finishes.
 
-# Quick Explanation About How The Tool Works
-- After you enter a command (or multiple commands if you entered '1' instead of '0' on the menu), it is split into keywords 
-  in a function and passes it to another function as a list. In that function, a setting dictionary that holds all the setting data
-  is created with these keywords. That settings dictionary is passed to command creator function. In this function each settings' FFMPEG 
-  command is created with the corresponding FFMPEG flags. After all commands are created, all these commands returned as a list and passed 
-  to the executor function. In this function, in a for loop, all commands taken by this function and this function executes them 
-  one by one and while executing, it returns progress continuously and that is printed to the console. After all render(s) 
-  are finished, output folder is opened with your operating system's file handler and operation finishes.
+## **_Web Tool_**
+  - If you use web version, it will be started on your local computer at address 'http://127.0.0.1:5000' as default, and 
+    even it is different, or you changed the host address and port; it will be printed to console by the package functions automatically. 
+    Copying and pasting the address to your browser is enough to reach upload page.
+  - Then you select a video to upload and press 'Continue' button to go to the video settings page.
+  - After reaching the video settings page, you enter the settings however you want and press 'Compress' button to start rendering process.
+  - Upon clicking on the 'Compress' button, all the input value objects are saved as a dictionary form and passed to a function. In 
+    this function, since some of the input objects, like checkboxes, can be left untouched resulting in no key about it in the 
+    dictionary; these keys are checked and added with default values. After that, this settings dictionary passed to another 
+    function that creates Command Console Tool command. Then, this command passed to the same function in the console tool. Rest 
+    of the process is the same as the console tool after this process. After render is finished, you can;
+    - Save the video by pressing 'Save Video' button,
+    
+    - Reset the settings by pressing 'Reset Video Settings' and do another configuration with the same uploaded and selected video 
+      - **_Note:_** _You need to press 'Compress' after doing new settings to render it again after resetting them with this button. Sometimes they are
+        not registered so, restarting the website completely from scratch will solve the problem temporarily. Please check `Known Issues` section
+        (end of the file) for details._ or,
+    
+    - Return back to the upload page by clicking 'Return Back to Upload Page' to do another configuration with another video.
+
 
 # Project Media
-> Settings are given in the following table for the console version.
+> For both console & web examples, all settings are set as the same of each other.\
+> Settings are given in the following table.
 
 |              **_Setting_**               |       **_Value_**       |
 |:----------------------------------------:|:-----------------------:|
@@ -169,16 +213,63 @@ And you should be good to go.
 ## Console Output Flag Names
 ![Console Output Flag Names](Resources/images(.png)/console_output_flag_names.png)
 
+## Web Console Output
+![Web Console Output](Resources/images(.png)/web_console_output.png)
+
+## Web Upload Page Idle
+![Web Upload Page Idle](Resources/images(.png)/web_upload_page_idle.png)
+
+## Web Upload Page Uploading
+![Web Upload Page Uploading](Resources/images(.png)/web_upload_page_uploading.png)
+
+## Web Upload Page Uploaded
+![Web Upload Page Uploaded](Resources/images(.png)/web_upload_page_uploaded.png)
+
+## Web Upload Page Selected
+![Web Upload Page Selected](Resources/images(.png)/web_upload_page_selected.png)
+
+## Web Video Settings Page
+![Web Video Settings Page](Resources/images(.png)/web_video_settings_page.png)
+
+## Web Video Settings Page Processing
+![Web Video Settings Page Processing](Resources/images(.png)/web_video_settings_page_processing.png)
+
+## Web Video Settings Page Preview
+![Web Video Settings Page Preview](Resources/images(.png)/web_video_settings_page_preview.png)
+
 
 # Known Issues
 - This section will be updated whenever a bug is discovered or fixed.
 
+### **_Console Tool_**
 > 1. If you enter a command that has a file name or path that has a space in it, it will not work due 
      to the keywords are generated by splitting the entered line with spaces. For now, please prefer using a file path 
      that does not contain any spaces in it. There is a location for it that will be created at the first run and, 
      it is named as `ProjectFiles/TestIO`, then `Inputs` for input videos and `Outputs` for output videos followed by 
      the video name. Don't forget to copy & paste your video files to the location `ProjectFiles/TestIO/Inputs` or your 
      desired location before writing the command.
+
+### **_Web Tool_**
+> 1. If you upload a video, then select to upload another video again and exit without selecting any video (or canceling it); 
+     after selecting  a video and clicking on 'Continue' button will result in a force page restart & refresh that will cause 
+     all videos to be  uploaded again to show up on the upload page again. This is probably caused because of the way I save 
+     the current selected file name to a file named `current_video.txt` by overwriting instead of appending.
+> 2. If you upload multiple videos, and select one of them; only the last one is selected even though you select another. 
+     This is again probably because of me saving the file by just overwriting to each other instead of appending to the file.
+> 3. While rendering, there is no handling about disabling buttons so, all the buttons can be spammed resulting in slowing 
+     down the computer, browser and rendering and addition to these; since while a render being processed it is written to 
+     a temporary file named (temp.mp4) so, spamming it make this file overwritten and resulting in corruption of the video.
+     For now, it is recommended to wait until the render is finished.
+> 4. After a valid render, 'Save Video' will save the video to just `Downloads` folder. There is no option to select a 
+     specific folder to save the video file and the video file is also saved with the same name as the input file.
+> 5. After a valid render, pressing 'Reset Video Settings' will reset the page state but even after some setting is changed, 
+     these changed settings sometimes cannot be captured, resulting in a render with the same settings as the last render.
+> 6. Without doing anything, just after uploading a video and seeing the settings page, unless you fill 'Width', 'Height, 
+     'Bitrate' and 'FPS' boxes, you cannot render a video.
+> 7. All buttons are active at start. 'Reset Video Settings' and 'Return Back to Upload Page' doesn't affect the beginning 
+     state of the page but since they are also connected to the same for as all buttons do, they cannot be work properly unless 
+     the boxes in #6 are filled.
+> 8. No multiple video can be selected to render at once like in the command tool.
 
 
 # License

@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+              name="viewport">
+        <meta content="ie=edge" http-equiv="X-UA-Compatible">
+
+        <script src="https://cdn.socket.io/4.5.3/socket.io.min.js"
+                integrity="sha384-WPFUvHkB1aHA5TDSZi6xtDgkF0wXJcIIxXhC6h8OT8EH3fC5PWro5pWJ1THjcfEi"
+                crossorigin="anonymous"></script>
+
+        <link href='https://fonts.googleapis.com/css?family=Dosis' rel='stylesheet'>
+
+        <title>FFMPEG Based Web Video Compressor Tool Using Python</title>
+    </head>
+
+    <body>
+        <h2 class="project-name">Web FFMPEG Video Compressor Tool</h2>
+        <h4 class="introduction">by Görkem Sarıkaya & Taha Berk Kuyruk</h4>
+
+        <form action="#" id="settings" method="POST">
+            <div class="settings-container">
+                <div class="left-column">
+                    <div class="video-container">
+                        <h2 class="info-text-1">Uploaded Video (Preview of the video you have selected is shown.)</h2>
+                        <video class="uploadedVideo" controls id="uploadedVideo" width="960" height="540">
+                            <source id="i_mp4" src="{{ url_for('static', filename='inputs/' + input_video_path) }}"
+                                    type="video/mp4">
+                            <source id="i_mov" src="{{ url_for('static', filename='inputs/' + input_video_path) }}"
+                                    type="video/mov">
+                            <source id="i_avi" src="{{ url_for('static', filename='inputs/' + input_video_path) }}"
+                                    type="video/avi">
+                            <source id="i_flv" src="{{ url_for('static', filename='inputs/' + input_video_path) }}"
+                                    type="video/flv">
+                            <source id="i_mkv" src="{{ url_for('static', filename='inputs/' + input_video_path) }}"
+                                    type="video/mkv">
+                            <source id="i_webm" src="{{ url_for('static', filename='inputs/' + input_video_path) }}"
+                                    type="video/webm">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+
+                    <button class="collapsible" style="font-size:25px"
+                            type="button">Resolution, Bitrate & FPS Settings</button>
+                    <div class="settings-group">
+                        <div class="resolution-tab">
+                            <div class="resolution-settings">
+                                <div class="resolution">
+                                    <label for="width">Width:</label>
+                                    <input id="width"
+                                           name="width" required
+                                           style="font-family: 'Dosis', 'sans-serif';
+                                            border-radius: 5px; border: 1px solid black"
+                                           type="number">
+                                    <label for="height">Height:</label>
+                                    <input id="height"
+                                           name="height" required
+                                           style="font-family: 'Dosis', 'sans-serif';
+                                            border-radius: 5px; border: 1px solid black"
+                                           type="number">
+                                    <label id="resolution">Resolution: 0 x 0</label>
+                                </div>
+                            </div>
+
+                            <br>
+
+                            <div class="bitrate-fps-settings">
+                                <div class="bitrate-fps">
+                                    <label for="bitrate">Bitrate (kbps):</label>
+                                    <input id="bitrate"
+                                           name="bitrate" required
+                                           style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                            border: 1px solid black"
+                                           type="number">
+
+                                    <label for="fps">FPS:</label>
+                                    <input id="fps"
+                                           name="fps" required
+                                           style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                            border: 1px solid black"
+                                           type="number">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="collapsible" style="font-size:25px" type="button">Codec Settings</button>
+                    <div class="settings-group">
+                        <div class="codec-tab">
+                            <div class="codec-settings">
+                                <div class="output-codec-setting">
+                                    <label for="output-codec">Output Codec:</label>
+                                    <select id="output-codec"
+                                            name="output_codec" required
+                                            style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                                border: 1px solid black">
+                                        <option value="H264">H264</option>
+                                        <option value="H265">H265</option>
+                                        <option value="VP9">VP9</option>
+                                        <option value="AV1">AV1</option>
+                                    </select>
+                                </div>
+
+                                <br>
+
+                                <div class="output-format-setting">
+                                    <label for="output-format">Output Format:</label>
+                                    <select id="output-format"
+                                            name="output_format" required
+                                            style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                                border: 1px solid black">
+                                        <option value="mp4">mp4</option>
+                                        <option value="mov">mov</option>
+                                        <option value="avi">avi</option>
+                                        <option value="flv">flv</option>
+                                        <option value="mkv">mkv</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="collapsible" style="font-size:25px" type="button">Compression Settings</button>
+                    <div class="settings-group">
+                        <div class="compression-tab">
+                            <div class="compression-setting">
+                                <div class="max-filesize">
+                                    <label for="max-enable">Limit File Size:</label>
+                                    <input id="max-enable" name="max_enable" type="checkbox">
+
+                                    <label for="max-filesize">Max File Size (MB):</label>
+                                    <input id="max-filesize"
+                                           name="max_filesize" pattern="(0|[1-9]\d*)?(\.\d+)?"
+                                           style="font-family: 'Dosis',serif; border-radius: 5px;
+                                            border: 1px solid black"
+                                           type="text">
+                                </div>
+
+                                <br>
+
+                                <div class="crf">
+                                    <label for="crf-enable">Enable CRF:</label>
+                                    <input id="crf-enable" name="crf_enable" type="checkbox">
+
+                                    <label for="crf_value">CRF:</label>
+                                    <input id="crf_value" min="0" max="51"
+                                           name="crf_value" step="1"
+                                           style="position:relative; left:25px; bottom:15px;"
+                                           type="range" value="23">
+                                    <span id="crf-text-value"
+                                          style="position:relative; left:160px; bottom:30px;">23</span>
+                                </div>
+
+                                <br>
+
+                                <div class="percentage">
+                                    <label for="percentage-enable">Enable Percentage Compression:</label>
+                                    <input id="percentage-enable" name="percentage_enable" type="checkbox">
+
+                                    <label for="percentage_value">Compression Percentage:</label>
+                                    <input id="percentage_value" min="0" max="100"
+                                           name="percentage_value" step="1"
+                                           style="position:relative; left:162px; bottom:14px;"
+                                           type="range" value="100">
+                                    <span id="percentage_value-text"
+                                          style="position:relative; left:295px; bottom:30px;">100%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="video-container">
+                        <h2 class="info-text-2">
+                            Rendered Video (Preview of the video will be shown after the render is completed.)
+                        </h2>
+
+                        <video class="renderedVideo" controls id="renderedVideo" width="960" height="540">
+                            <source id="o_mp4" src="" type="video/mp4">
+                            <source id="o_mov" src="" type="video/mov">
+                            <source id="o_avi" src="" type="video/avi">
+                            <source id="o_flv" src="" type="video/flv">
+                            <source id="o_mkv" src="" type="video/mkv">
+                            <source id="o_webm" src="" type="video/webm">
+                            Your browser does not support the video tag.
+                        </video>
+
+                        <h2 class="progress-text-1" id="progress-text-1">Step: 1/1</h2>
+                        <div class="progress-bar-with-text" id="progress-bar-with-text">
+                            <div class="progress-bar" id="progress-bar">
+                                <div class="progress-bar-fill" id="progress-bar-fill" style="width: 0;"></div>
+                                <div class="progress-bar-percent" id="progress-bar-percent">
+                                    00:00:00:00 / 00:00:00:00 (0.00%)
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="progress-text-2" id="progress-text-2">
+                            Video Cut - Flip - Rotation - Audio Volume - Compressions settings are being applied. </h2>
+
+                        <div class="video-warner" id="video-warner">
+                            <h2 class="rendered-information">Rendered Video</h2>
+                            <h2 class="rendered-information">or</h2>
+                            <h2 class="rendered-information">Rendering Progress</h2>
+                            <h2 class="rendered-information">will be shown here.</h2>
+                        </div>
+                    </div>
+
+                    <button class="collapsible" style="font-size:25px" type="button">Speed & Volume Settings</button>
+                    <div class="settings-group">
+                        <div class="speed-setting">
+                            <div class="change-speed-checkbox">
+                                <label for="change-speed">Change Speed:</label>
+                                <input id="change-speed"
+                                       name="change_speed"
+                                       style="border-radius: 5px; border: 1px solid black"
+                                       type="checkbox">
+
+                                <label for="speed">Speed:</label>
+                                <input id="speed"
+                                       name="speed" pattern="(0|[1-9]\d*)?(\.\d+)?"
+                                       style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                        border: 1px solid black"
+                                       type="text">
+                            </div>
+                        </div>
+
+                        <br>
+
+                        <div class="volume-setting">
+                            <div class="volume">
+                                <label for="change-volume">Change Volume:</label>
+                                <input id="change-volume" name="change_volume"
+                                       type="checkbox">
+
+                                <br>
+
+                                <label for="volume">Volume:</label>
+                                <input id="volume"
+                                       name="volume" pattern="(0|[1-9]\d*)?(\.\d+)?"
+                                       style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                        border: 1px solid black"
+                                       type="text">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="collapsible" style="font-size:25px" type="button">Cut Settings</button>
+                    <div class="settings-group">
+                        <div class="cut-setting">
+                            <label for="cut_enable">Cut:</label>
+                            <input id="cut_enable" name="cut" type="checkbox">
+
+                            <br>
+
+                            <br>
+
+                            <label for="start_enable">Start:</label>
+                            <input id="start_enable" name="start_enable" type="checkbox">
+
+                            <label for="start-time">Start Time:</label>
+                            <input id="start-time"
+                                   name="start_time" pattern="(0|[1-9]\d*)?(\.\d+)?"
+                                   style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                    border: 1px solid black"
+                                   type="text">
+
+                            <br>
+
+                            <label for="end_enable">End:</label>
+                            <input id="end_enable" name="end_enable" type="checkbox">
+
+                            <label for="end-time">End Time:</label>
+                            <input id="end-time"
+                                   name="end_time" pattern="(0|[1-9]\d*)?(\.\d+)?"
+                                   style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                    border: 1px solid black"
+                                   type="text">
+                        </div>
+                    </div>
+
+                    <button class="collapsible" style="font-size:25px" type="button">Rotation Settings</button>
+                    <div class="settings-group">
+                        <div class="flip-and-rotation-settings">
+                            <div class="flip">
+                                <label for="horizontal-flip">Horizontal Flip:</label>
+                                <input id="horizontal-flip" name="horizontal_flip" type="checkbox">
+
+                                <label for="vertical-flip">Vertical Flip:</label>
+                                <input id="vertical-flip" name="vertical_flip" type="checkbox">
+                            </div>
+
+                            <br>
+
+                            <div class="rotate">
+                                <label for="rotate">Rotate:</label>
+                                <input id="rotate" name="rotate" type="checkbox">
+                                <br><br>
+
+                                <label for="rotate-direction">Rotate Direction:</label>
+                                <select id="rotate-direction"
+                                        name="rotate_direction"
+                                        style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                            border: 1px solid black">
+                                    <option value="clockwise">Clockwise (CW) (Right)</option>
+                                    <option value="counterclockwise">Counter Clockwise (CCW) (Left)</option>
+                                </select>
+
+                                <label for="rotate-degree">Rotate Degree:</label>
+                                <input id="rotate-degree"
+                                    name="rotate_degree"
+                                    style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                        border: 1px solid black"
+                                       type="number">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="buttons">
+                        <div class="compress-button">
+                            <input class="button"
+                                   style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                    border: 1px solid black"
+                                   type="submit" value="Compress Video">
+                        </div>
+                        <div class="save-button">
+                            <input class="button"
+                                   style="font-family: 'Dosis', 'sans-serif'; border-radius: 5px;
+                                    border: 1px solid black"
+                                   type="submit" value="Save Video">
+                        </div>
+                        <div class="reset-button">
+                            <input class="button"
+                                   style="font-family: 'Dosis', 'sans-serif'; border-radius:5px;
+                                    border: 1px solid black"
+                                   type="submit" value="Reset Video Settings">
+                        </div>
+
+                        <div class="main-menu-button">
+                            <form action="/" id="main-menu" method="POST">
+                                <input class="button"
+                                       style="font-family: 'Dosis', 'sans-serif'; border-radius:5px;
+                                        border: 1px solid black"
+                                       type="submit" value="Return Back to Upload Page">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </body>
+
+    <style>
+        .collapsible {
+            margin-top: 50px;
+            background-color: #fefbd8;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            font-weight: 900;
+            width: 100%;
+            font-family: 'Dosis', 'sans-serif';
+            transition: all 0.3s ease;
+        }
+
+        .collapsible:after {
+            content: '\0003E';
+            font-size: 25px;
+            color: black;
+            float: right;
+            margin-left: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .project-name, .introduction {
+            font-family: 'Dosis', 'sans-serif';
+            text-align: center;
+        }
+
+        .project-name {
+            font-family: 'Dosis', 'sans-serif';
+            margin-bottom: -10px;
+        }
+
+        .settings-container {
+            font-family: 'Dosis', 'sans-serif';
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-left: 40px;
+            margin-right: 40px;
+        }
+
+        .left-column {
+            flex-basis: 50%;
+            padding-right: 20px;
+        }
+
+        .right-column {
+            flex-basis: 50%;
+            padding-left: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: auto;
+        }
+
+        .settings-group {
+            border-radius: 10px;
+            background-color: #fefbd8;
+            border: 2px solid black;
+            padding: 50px;
+            font-family: 'Dosis', 'sans-serif';
+            margin-bottom: 20px;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
+            z-index: 99;
+        }
+
+        .active + .settings-group {
+            max-height: 500px;
+            opacity: 1;
+        }
+
+        .progress-bar {
+            width: 699px;
+            height: 35px;
+            background-color: #f1f1f1;
+            border: 1px solid black;
+            overflow: hidden;
+            position: relative;
+            text-align: center;
+            border-radius: 10px 25px 10px 25px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.3s ease-in-out;
+            position: relative;
+        }
+
+        .progress-bar-percent {
+            position: absolute;
+            top: 21%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: black;
+            font-weight: bold;
+            line-height: 20px;
+        }
+
+        .rendered-information {
+            font-size: 400%;
+            margin-top: 80px;
+            margin-bottom: -50px;
+        }
+
+        .video-warner {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: -59px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .info-text-2 {
+            margin-bottom: 75px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+        }
+
+        .buttons > div {
+            flex: 0.2;
+            margin: 0 5px;
+        }
+
+        .button {
+            font-size: 150%;
+        }
+
+        .progress-text-1, .progress-text-2 {
+            font-size: 300%;
+        }
+
+        .progress-text-1 {
+            margin-top: 150px;
+        }
+
+        .progress-text-2 {
+            margin-bottom: 150px;
+        }
+
+        .renderedVideo {
+            margin-top: -53px;
+        }
+    </style>
+
+    <script>
+        const widthBox = document.getElementById('width');
+        const heightBox = document.getElementById('height');
+        const resolutionBox = document.getElementById('resolution');
+        widthBox.addEventListener('input', () => {
+            resolutionBox.textContent = "Resolution: " + widthBox.value + " x " + heightBox.value;
+        })
+
+        heightBox.addEventListener('input', () => {
+            resolutionBox.textContent = "Resolution: " + widthBox.value + " x " + heightBox.value;
+        })
+
+        const crfSlider = document.getElementById('crf_value');
+        const crfValue = document.getElementById('crf-text-value');
+        const crfTextLabel = document.querySelector('label[for="crf_value"]');
+        crfSlider.style.display = 'none';
+        crfValue.style.display = 'none';
+        crfTextLabel.style.display = 'none';
+
+        const outputCodec = document.getElementById('output-codec');
+        const outputFormat = document.getElementById('output-format');
+
+        outputCodec.addEventListener('change', function () {
+            const selectedCodec = outputCodec.value;
+
+            if (selectedCodec === 'H264') {
+                outputFormat.innerHTML = `
+                    <option value=".mp4">.mp4</option>
+                    <option value=".mov">.mov</option>
+                    <option value=".avi">.avi</option>
+                    <option value=".flv">.flv</option>
+                    <option value=".mkv">.mkv</option>
+                `
+            } else if (selectedCodec === 'H265') {
+                outputFormat.innerHTML = `
+                    <option value=".mp4">.mp4</option>
+                    <option value=".mkv">.mkv</option>
+                `
+            } else if (selectedCodec === 'VP9') {
+                outputFormat.innerHTML = `
+                    <option value=".webm">.webm</option>
+                    <option value=".mkv">.mkv</option>
+                `
+            } else if (selectedCodec === 'AV1') {
+                outputFormat.innerHTML = `
+                    <option value=".mp4">.mkv</option>
+                    <option value=".webm">.webm</option>
+                `
+            }
+
+            if (selectedCodec === 'H264' || selectedCodec === 'H265') {
+                crfSlider.min = 0;
+                crfSlider.max = 51;
+                crfSlider.value = 23;
+                crfValue.textContent = crfSlider.value;
+            } else if (selectedCodec === 'VP9' || selectedCodec === 'AV1') {
+                crfSlider.min = 0;
+                crfSlider.max = 63;
+                crfSlider.value = 31;
+                crfValue.textContent = crfSlider.value;
+            }
+        });
+
+        const maxFileSizeEnableBox = document.getElementById('max-enable');
+        const maxFileSizeBox = document.getElementById('max-filesize');
+        const maxFileSizeText = document.querySelector('label[for="max-filesize"]')
+        maxFileSizeBox.style.display = 'none';
+        maxFileSizeText.style.display = 'none';
+        maxFileSizeEnableBox.addEventListener('change', function () {
+            if (maxFileSizeEnableBox.checked) {
+                maxFileSizeBox.style.display = 'block';
+                maxFileSizeText.style.display = 'block';
+            } else {
+                maxFileSizeBox.style.display = 'none';
+                maxFileSizeText.style.display = 'none';
+            }
+        })
+
+        crfSlider.addEventListener('input', function () {
+            crfValue.textContent = crfSlider.value;
+        });
+
+        const crfEnableBox = document.getElementById('crf-enable');
+        crfEnableBox.addEventListener('change', function () {
+            if (crfEnableBox.checked) {
+                crfSlider.style.display = 'block';
+                crfValue.style.display = 'block';
+                crfTextLabel.style.display = 'block';
+            } else {
+                crfSlider.style.display = 'none';
+                crfValue.style.display = 'none';
+                crfTextLabel.style.display = 'none';
+            }
+        });
+
+
+        const percentageSlider = document.getElementById('percentage_value');
+        const percentageValue = document.getElementById('percentage_value-text');
+
+        percentageSlider.addEventListener('input', function () {
+            percentageValue.textContent = percentageSlider.value + "%";
+        });
+
+        const percentageEnableBox = document.getElementById('percentage-enable');
+        const percentageTextLabel = document.querySelector('label[for="percentage_value"]');
+        percentageSlider.style.display = 'none';
+        percentageValue.style.display = 'none';
+        percentageTextLabel.style.display = 'none';
+
+        percentageEnableBox.addEventListener('change', function () {
+            if (percentageEnableBox.checked) {
+                percentageSlider.style.display = 'block';
+                percentageValue.style.display = 'block'
+                percentageTextLabel.style.display = 'block';
+            } else {
+                percentageSlider.style.display = 'none';
+                percentageValue.style.display = 'none'
+                percentageTextLabel.style.display = 'none';
+            }
+        });
+
+        const speed_enabled = document.getElementById('change-speed');
+        const speed_value = document.getElementById('speed');
+        const speed_text_label = document.querySelector('label[for="speed"]');
+        speed_value.style.display = 'none';
+        speed_text_label.style.display = 'none';
+        speed_enabled.addEventListener('change', function () {
+            if (speed_enabled.checked) {
+                speed_value.style.display = 'block';
+                speed_text_label.style.display = 'block';
+            } else {
+                speed_value.style.display = 'none';
+                speed_text_label.style.display = 'none';
+            }
+        });
+
+        const volume_enabled = document.getElementById('change-volume');
+        const volume_value = document.getElementById('volume');
+        const volume_text_label = document.querySelector('label[for="volume"]');
+        volume_value.style.display = 'none';
+        volume_text_label.style.display = 'none';
+        volume_enabled.addEventListener('change', function () {
+            if (volume_enabled.checked) {
+                volume_value.style.display = 'block';
+                volume_text_label.style.display = 'block';
+            } else {
+                volume_value.style.display = 'none';
+                volume_text_label.style.display = 'none';
+            }
+        });
+
+        const cut_start = document.getElementById('start-time');
+        const cut_end = document.getElementById('end-time');
+        const cut_start_enabled = document.getElementById('start_enable');
+        const cut_end_enabled = document.getElementById('end_enable');
+        const cut_start_label = document.querySelector('label[for="start-time"]');
+        const cut_end_label = document.querySelector('label[for="end-time"]');
+        const cut_start_text_label = document.querySelector('label[for="start_enable"]');
+        const cut_end_text_label = document.querySelector('label[for="end_enable"]');
+        cut_start_enabled.style.display = 'none';
+        cut_end_enabled.style.display = 'none';
+        cut_start.style.display = 'none';
+        cut_end.style.display = 'none';
+        cut_start_label.style.display = 'none';
+        cut_end_label.style.display = 'none';
+        cut_start_text_label.style.display = 'none';
+        cut_end_text_label.style.display = 'none';
+
+        const cut_enabled = document.getElementById('cut_enable');
+        cut_enabled.addEventListener('change', function () {
+            if (cut_enabled.checked) {
+                cut_start_enabled.style.display = 'block';
+                cut_end_enabled.style.display = 'block';
+                cut_start_text_label.style.display = 'block';
+                cut_end_text_label.style.display = 'block';
+                if (cut_start_enabled.checked) {
+                    cut_start.style.display = 'block';
+                    cut_start_label.style.display = 'block';
+                }
+                if (cut_end_enabled.checked) {
+                    cut_end.style.display = 'block';
+                    cut_end_label.style.display = 'block';
+                }
+            } else {
+                cut_start_enabled.style.display = 'none';
+                cut_end_enabled.style.display = 'none';
+                cut_start_text_label.style.display = 'none';
+                cut_end_text_label.style.display = 'none';
+                cut_start.style.display = 'none';
+                cut_end.style.display = 'none';
+                cut_start_label.style.display = 'none';
+                cut_end_label.style.display = 'none';
+            }
+        });
+
+        cut_start_enabled.addEventListener('change', function () {
+            if (cut_start_enabled.checked) {
+                cut_start.style.display = 'block';
+                cut_start_label.style.display = 'block';
+            } else {
+                cut_start.style.display = 'none';
+                cut_start_label.style.display = 'none';
+            }
+        });
+
+        cut_end_enabled.addEventListener('change', function () {
+            if (cut_end_enabled.checked) {
+                cut_end.style.display = 'block';
+                cut_end_label.style.display = 'block';
+            } else {
+                cut_end.style.display = 'none';
+                cut_end_label.style.display = 'none';
+            }
+        });
+
+        const rotate_direction = document.getElementById('rotate-direction');
+        const rotate_direction_label = document.querySelector('label[for="rotate-direction"]');
+        const rotate_value = document.getElementById('rotate-degree');
+        const rotate_text_label = document.querySelector('label[for="rotate-degree"]');
+        rotate_value.style.display = 'none';
+        rotate_text_label.style.display = 'none';
+        rotate_direction.style.display = 'none';
+        rotate_direction_label.style.display = 'none';
+
+        const rotate_enabled = document.getElementById('rotate');
+        rotate_enabled.addEventListener('change', function () {
+            if (rotate_enabled.checked) {
+                rotate_value.style.display = 'block';
+                rotate_text_label.style.display = 'block';
+                rotate_direction.style.display = 'block';
+                rotate_direction_label.style.display = 'block';
+            } else {
+                rotate_value.style.display = 'none';
+                rotate_text_label.style.display = 'none';
+                rotate_direction.style.display = 'none';
+                rotate_direction_label.style.display = 'none';
+            }
+        });
+
+        let coll = document.getElementsByClassName("collapsible");
+        for (let i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                let content = this.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                }
+            });
+        }
+
+        function resizeVideoContainer() {
+            const uploadedVideo = document.getElementById('uploadedVideo')
+            const renderedVideo = document.getElementById('renderedVideo')
+            const videoWarner = document.getElementById('video-warner')
+            const progressBar = document.getElementById('progress-bar')
+
+            const windowWidth = window.innerWidth;
+
+            const video_width = windowWidth / 2 - 50;
+            const video_height = video_width * (9 / 16);
+
+            uploadedVideo.style.width = (video_width - 50) + 'px';
+            uploadedVideo.style.height = (video_height - 50) + 'px';
+
+            renderedVideo.style.width = (video_width - 50) + 'px';
+            renderedVideo.style.height = (video_height - 50) + 'px';
+
+            videoWarner.style.width = (video_width - 50) + 'px';
+            videoWarner.style.height = (video_height - 50) + 'px';
+
+            progressBar.style.width = (video_width - 50) + 'px';
+        }
+
+        window.addEventListener('resize', resizeVideoContainer);
+        resizeVideoContainer();
+
+        window.onload = function () {
+            let compress_button = document.querySelector('.compress-button');
+            let save_button = document.querySelector('.save-button');
+            let reset_button = document.querySelector('.reset-button');
+            let mainMenu_button = document.querySelector('.main-menu-button');
+            let form = document.getElementById('settings');
+            let render_container = document.getElementById('renderedVideo')
+            let progress_bar = document.getElementById('progress-bar')
+            let video_warner = document.getElementById('video-warner')
+            let progress_text_1 = document.getElementById('progress-text-1')
+            let progress_text_2 = document.getElementById('progress-text-2')
+            render_container.style.display = 'none'
+            progress_bar.style.display = 'none'
+            video_warner.style.display = 'block'
+            progress_text_1.style.display = 'none'
+            progress_text_2.style.display = 'none'
+
+            function setVideo() {
+                let inputVideoElement = document.getElementById('uploadedVideo');
+                let inputActiveSource = inputVideoElement.currentSrc;
+
+                let renderSource = document.getElementById('renderedVideo');
+                let split = inputActiveSource.split('/');
+                renderSource.src = "{{ url_for('static', filename='outputs/') }}" + split[split.length - 1]
+                console.log(renderSource.src)
+                renderSource.load()
+            }
+
+            function resetVideo() {
+                let renderSource = document.getElementById('renderedVideo');
+                renderSource.src = "";
+            }
+
+            function previewVideo() {
+                if (video_warner.style.display === 'block') {
+                    video_warner.style.display = 'none';
+                }
+                if (progress_bar.style.display === 'block') {
+                    progress_bar.style.display = 'none';
+                }
+                if (progress_text_1.style.display === 'block') {
+                    progress_text_1.style.display = 'none';
+                }
+                if (progress_text_2.style.display === 'block') {
+                    progress_text_2.style.display = 'none';
+                }
+                if (render_container.style.display === 'none') {
+                    render_container.style.display = 'block';
+                }
+                setVideo();
+            }
+
+            function deletePreview() {
+                if (render_container.style.display === 'block') {
+                    render_container.style.display = 'none';
+                }
+                if (progress_bar.style.display === 'block') {
+                    progress_bar.style.display = 'none';
+                }
+                if (progress_text_1.style.display === 'block') {
+                    progress_text_1.style.display = 'none';
+                }
+                if (progress_text_2.style.display === 'block') {
+                    progress_text_2.style.display = 'none';
+                }
+                if (video_warner.style.display === 'none') {
+                    video_warner.style.display = 'block';
+                }
+                resetVideo();
+            }
+
+            const socket = io();
+            socket.connect('https://localhost:25565');
+            socket.on('update progress', function (data) {
+                let progress_text_1 = document.getElementById('progress-text-1');
+                let progress_text_2 = document.getElementById('progress-text-2');
+                let current = data.current;
+                let end = data.end;
+                let progress = data.progress;
+                let complete = data.complete;
+                let progressBarValue = document.getElementById('progress-bar-fill');
+                let progressBarText = document.getElementById('progress-bar-percent');
+                let stage = data.stage;
+                let stages = data.total;
+
+                progress_text_1.innerHTML = 'Step:' + ' ' + stage + '/' + stages;
+                if (stage === 1) {
+                    progress_text_2.innerHTML = 'Video Cut - Flip - Rotation - Audio Volume - Compressions settings are being applied.'
+                    progress_text_2.style.marginBottom = 124 * (window.innerHeight / 1080) + 'px'
+                } else if (stage === 2) {
+                    progress_text_2.innerHTML = 'Video Speed - Bitrate - FPS settings are being applied.'
+                    progress_text_2.style.marginBottom = 185 * (window.innerHeight / 1080) + 'px'
+                }
+
+                progressBarValue.style.width = progress + "%";
+                progressBarText.innerHTML = current + '/' + end + ' ' + '(' + progress.toFixed(2) + "%" + ')';
+
+                if (complete && stage === stages) {
+                    previewVideo()
+                }
+            })
+
+            compress_button.addEventListener('click', function () {
+                let formData = new FormData(form);
+                fetch('/rendering', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (video_warner.style.display === 'block') {
+                    video_warner.style.display = 'none'
+                    progress_bar.style.display = 'block'
+                    progress_text_1.style.display = 'block'
+                    progress_text_2.style.display = 'block'
+                }
+            })
+
+            save_button.addEventListener('click', function () {
+                let videoElement = document.getElementById('renderedVideo');
+                let videoURL = videoElement.src;
+                if (videoURL === "") {
+                    alert('No video to save.')
+                } else {
+                    let slashIndex = videoURL.lastIndexOf('/');
+                    let originalVideoFileName = videoURL.substring(slashIndex + 1);
+
+                    let dotIndex = originalVideoFileName.lastIndexOf('.');
+                    let videoFileNameWithoutExtension = originalVideoFileName.substring(0, dotIndex);
+                    let extension = originalVideoFileName.substring(dotIndex);
+
+                    let finalFileName = videoFileNameWithoutExtension +
+                        '_rendered_by_KOmpressor' +
+                        extension;
+
+                    let link = document.createElement('a');
+                    link.href = videoURL;
+                    link.download = finalFileName;
+                    link.click();
+                }
+            })
+
+            mainMenu_button.addEventListener('click', function () {
+                window.location.href = "{{ url_for('upload_page') }}"
+            })
+
+            reset_button.addEventListener('click', function () {
+                deletePreview();
+            })
+
+            form.onsubmit = function (event) {
+                event.preventDefault();
+            }
+        }
+    </script>
+</html>
