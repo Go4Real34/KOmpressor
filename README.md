@@ -1,3 +1,14 @@
+<div align="center">
+  <img src="Resources/gifs(.gif)/project_banner.gif" alt="Project Banner">
+
+  <p align="center">
+    <img alt="GitHub all releases" src="https://img.shields.io/github/downloads/Go4Real34/KOmpressor/total?style=flat&logo=GitHub&label=Downloads" style="margin-right: 5px;">
+    <img alt="GitHub last commit (by committer)" src="https://img.shields.io/github/last-commit/Go4Real34/KOmpressor?display_timestamp=committer" style="margin-right: 5px;">
+    <img alt="GitHub repo size" src="https://img.shields.io/github/repo-size/Go4Real34/KOmpressor" style="margin-right: 5px;">
+    <img alt="GitHub" src="https://img.shields.io/github/license/Go4Real34/KOmpressor">
+  </p>
+</div>
+
 # KOmpressor
 **_FFMPEG Based Web & Console Video Compression Tool with Next Gen Codecs (H.264, H.265, VP9, AV1) \
 by Görkem Sarıkaya & Taha Berk Kuyruk for Computer Engineering III, Engineering Project III Course, 

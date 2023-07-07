@@ -25,11 +25,36 @@ The version format given as following.
 > #### - W: No Change in the Project
 > #### - YYYY-MM-DD: Date of release (Year - Month - Day)
 
-# **_Latest Version: [v1.2.0.0] - 2023-07-07_**
+# **_Latest Version: [v1.2.0.1] - 2023-07-07_**
 
 <br>
 
 # **_Change Log History_**
+
+# [v1.2.0.1] - 2023-07-07
+- Updated README.md file.
+
+### **_Additions_**
+- **_Resources_**
+  - **_'gifs(.gif)' Folder_**
+    - Added with a gif that contains an animation of project banner.
+
+### **_Changes_**
+- **_Documentation_**
+  - **_README.md_**
+    - Animated project logo and banner are added.
+    - Some [shields.io](https://shields.io) badges (4) (download count, last commit, repository size and license) are added.
+  
+  - **_CHANGELOG.md_**
+      - Added new changes about **_[v1.2.0.1]_**.
+
+### **_Fixes_**
+ - No fixes were made.
+
+### **_Deletions_**
+- No deletions were made.
+
+<br>
 
 # [v1.2.0.0] - 2023-07-07
 - Created menu for the project to navigate between functionalities.
