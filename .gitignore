@@ -1,0 +1,10 @@
+.git/
+.idea/
+venv/
+
+ProjectFiles/__pycache__/
+ProjectFiles/Functions/__pycache__/
+
+temp.mp4
+
+ProjectFiles/TestIO/
