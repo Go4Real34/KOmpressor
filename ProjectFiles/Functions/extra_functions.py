@@ -35,6 +35,10 @@ def handle_first_run(which_handling):
                 for file in os.listdir('ProjectFiles/static/outputs'):
                     os.remove(os.path.join('ProjectFiles/static/outputs', file))
 
+    elif which_handling == 'KOmpressor':
+        handle_first_run('console')
+        handle_first_run('web')
+
     if os.path.exists('ProjectFiles/current_video.txt'):
         os.remove('ProjectFiles/current_video.txt')
 

@@ -86,10 +86,8 @@ by Görkem Sarıkaya & Taha Berk Kuyruk for Computer Engineering III, Engineerin
     ```.\venv\Scripts\activate```\
     ```pip install -r requirements.txt```
   
-  - Finally, run the files named `console_compressor.py` or `web_compressor.py` Python files that is under `ProjectFiles` folder,
-    depending on your choice (Create a configuration with Python Interpreter if needed. I used PyCharm to do this project, 
-    they both work with a configuration or selecting `Current File` as the run option.).
-
+  - Finally, run the file named `KOmpressor.py` Python file that is under `KOmpressor` folder.
+    - **_Note:_** If you want, you can run the files individually, this file just makes it easier to reach them both at once.
 
 - If you are using the command prompt;
   - Go to the location of the project.\
@@ -108,7 +106,9 @@ by Görkem Sarıkaya & Taha Berk Kuyruk for Computer Engineering III, Engineerin
   - Then, install the required packages with the command via console:\
     ```pip install -r requirements.txt```
   
-  - Finally, run the `console_compressor.py` or `web_compressor.py` Python file with the command via console:\
+  - Finally, run the `KOmpressor.py` Python file with the following command:\
+    ```python KOmpressor.py```
+    - **_Note:_** If you want, you can run the files individually, this file just makes it easier to reach them both at once.\
     ```python ProjectFiles/console_compressor.py```\
     ```python ProjectFiles/web_compressor.py```
   
@@ -136,6 +136,9 @@ And you should be good to go.
 
 
 # Quick Explanation About How The Tools Work
+## **_Start_**
+  - Firstly, you select which version you are going to use from the menu.
+
 ## **_Console Tool_**
   - If you use console command, it will continue with the same command prompt.
   - After you enter a command (or multiple commands if you entered '1' instead of '0' on the menu), it is split into keywords 
@@ -209,6 +212,9 @@ And you should be good to go.
 
 ## Output Video Frame Example
 ![Output Video Frame Example](Resources/images(.png)/output_video_frame_example.png)
+
+## Full Menu
+![Full Menu](Resources/images(.png)/full_menu.png)
 
 ## Console Output Flag Names
 ![Console Output Flag Names](Resources/images(.png)/console_output_flag_names.png)

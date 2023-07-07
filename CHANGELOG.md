@@ -25,11 +25,49 @@ The version format given as following.
 > #### - W: No Change in the Project
 > #### - YYYY-MM-DD: Date of release (Year - Month - Day)
 
-# **_Latest Version: [v1.1.0.0] - 2023-07-07_**
+# **_Latest Version: [v1.2.0.0] - 2023-07-07_**
 
 <br>
 
 # **_Change Log History_**
+
+# [v1.2.0.0] - 2023-07-07
+- Created menu for the project to navigate between functionalities.
+
+### **_Additions_**
+- **_Project Files_**
+  - **_KOmpressor.py:_** The main start point of the menu version of the project. Functions handle folder creation, start 
+    the console or web server depending on the user selection.
+
+
+- **_Resources_**
+  - **_'images(.png)' Folder_**
+    - Added an image (1) that is used in the [README.md](README.md) file in `Project Media` section.
+
+### **_Changes_**
+- **_Project Files_**
+  - **_extra_functions.py_**
+    - Added code content for `KOmpressor` in `handle_first_run` function.
+
+
+- **_Documentation_**
+  - **_README.md_**
+    - Added extra explanations about combined version in `Preparation, Usage & Deletion`, `Quick Explanation About How The Tools Work` and 
+      `Project Media` sections.
+  
+  - **_CHANGELOG.md_**
+    - Added new changes about **_[v1.2.0.0]_**.
+
+  - **_.gitignore_**
+    - Added a new folder (1) to ignore.
+
+### **_Fixes_**
+ - No fixes were made.
+
+### **_Deletions_**
+- No deletions were made.
+
+<br>
 
 # [v1.1.0.0] - 2023-07-07
 - Created web version of the FFMPEG based compressor.
